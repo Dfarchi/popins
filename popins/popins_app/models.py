@@ -17,7 +17,7 @@ class Parent(models.Model):
         return self.name
 
     class Meta:
-        db_table = 'actors'
+        db_table = 'parents'
 
 
 class Nanny(models.Model):
@@ -69,7 +69,7 @@ class Session(models.Model):
     # roll = models.TextField(db_column='roll')
 
     def __str__(self):
-        return f"{self.parents.name} on {self.date}"
+        return f"{self.parent.name} on {self.date}"
 
     class Meta:
-        db_table = 'movie_actors'
+        db_table = 'sessions'
