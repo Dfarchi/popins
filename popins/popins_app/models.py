@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
-    User_id = models.ForeignKey(User, db_column='user_id', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, db_column='user_id', on_delete=models.CASCADE)
     is_parent = models.BooleanField(db_column='is_parent', default=False)
     is_nanny = models.BooleanField(db_column='is_nanny', default=False)
     name = models.CharField(max_length=256, db_column='name', null=False, blank=False)
@@ -23,69 +23,35 @@ class Profile(models.Model):
 
 
 class Session(models.Model):
-    user = models.OneToOneField(Profile, on_delete=models.CASCADE, default=None)
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, default=None)
     date = models.DateField(db_column='date', null=False, auto_now_add=True)
     salary = models.IntegerField(db_column='salary', default=50)
     note = models.TextField(max_length=256, db_column='note', null=False, blank=False)
     has_happened = models.BooleanField(null=False, default=False)
+    interested_nannys = models.ManyToManyField(User, through='Interest', related_name='sessions')
 
     def __str__(self):
-        return f"{self.user.name} on {self.date}"
+        return f"{self.user.profile.name} on {self.date}"
 
     class Meta:
-        db_table = 'sessions'
-
+        db_table = "sessions"
 
 class Interest(models.Model):
-    user = models.OneToOneField(Profile, on_delete=models.RESTRICT)
-    session = models.ManyToManyField(Session,db_table='Session_Interest')
+    nanny = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='interests', default=None)
+    session = models.ForeignKey(Session, on_delete=models.RESTRICT, default=None)
     note = models.TextField(max_length=256, db_column='note', null=False, blank=False)
-    talked = models.BooleanField(null=False, blank=False)
-    status = models.BooleanField(null=False, blank=False)
+    talked = models.BooleanField(null=False, blank=False, default=False)
+    status = models.BooleanField(null=False, blank=False, default=False)
 
     class Meta:
         db_table = "interest"
 
 
 class Review(models.Model):
-    user = models.OneToOneField(Profile, on_delete=models.RESTRICT)
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, default=None)
     review = models.TextField(db_column='review', null=False)
     review_date = models.DateField(db_column='date', null=False, auto_now_add=True)
 
     class Meta:
         db_table = "reviews"
 
-
-"MERGEd TABLES"
-# class Parent(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     name = models.CharField(max_length=256, db_column='name', null=False, blank=False)
-#     kids = models.CharField(max_length=256, db_column='kids', null=False, blank=False)
-#
-#
-#     def __str__(self):
-#         return self.name
-#
-#     class Meta:
-#         db_table = 'users'
-#
-#
-# class Nanny(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.RESTRICT)
-#     name = models.CharField(max_length=256, db_column='name', null=False, blank=False)
-#     address = models.CharField(max_length=256, db_column='address', null=False, blank=False)
-#     bio = models.CharField(max_length=256, db_column='bio', null=False, blank=False)
-#
-#     """create links table"""
-#     sessions = models.ForeignKey('Session', on_delete=models.RESTRICT, related_name='nanny_sessions')
-#     # relations = models.ForeignKey('Relations', on_delete=models.RESTRICT, related_name='nanny_relations')
-#     # in_app_exp = ???
-#     # phone_number = PhoneNumberField
-#     birth_year = models.IntegerField(db_column='birth_year', null=False)
-#
-#     def __str__(self):
-#         return self.name
-#
-#     class Meta:
-#         db_table = "nannys"
-#
