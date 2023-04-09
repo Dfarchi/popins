@@ -2,6 +2,22 @@ from django.utils import timezone
 from rest_framework import serializers
 from rest_framework.authtoken.admin import User
 
+def validate_user_id(value):
+    if not User.objects.filter(id=value).exists():
+        raise serializers.ValidationError("Invalid user ID.")
+    return value
+
+def validate_date(value):
+    if value < timezone.now().date():
+        raise serializers.ValidationError("The date cannot be in the past.")
+    return value
+
+def validate_salary(value):
+    if value < 30:
+        raise serializers.ValidationError("Salary cannot be under 30NIS.")
+    return value
+
+
 from .models import Session
 
 from rest_framework import serializers
@@ -27,20 +43,14 @@ class SessionValidationSerializer(serializers.Serializer):
         model = Session
         fields = ('id', 'user_id', 'user_name', 'date', 'salary', 'has_happened', 'interested_nannys')
 
-    def validate_user_id(self, user_id):
-        if not User.objects.filter(id=user_id).exists():
-            raise serializers.ValidationError("Invalid user ID.")
-        return user_id
+    def validate_user_id(self, value):
+        return validate_user_id(value)
 
-    def validate_date(self, date):
-        if date < timezone.now().date():
-            raise serializers.ValidationError("The date cannot be in the past.")
-        return date
+    def validate_date(self, value):
+        return validate_date(value)
 
-    def validate_salary(self, salary):
-        if salary < 30:
-            raise serializers.ValidationError("Salary cannot be under 30NIS.")
-        return salary
+    def validate_salary(self, value):
+        return validate_salary(value)
 
     def get_interested_nannys(self, session):
         return [{'id': nanny.id, 'name': nanny.profile.name} for nanny in session.interested_nannys.all()]
@@ -62,21 +72,15 @@ class InterestValidationSerializer(serializers.Serializer):
         return session
 
     def validate_nanny_id(self, nanny):
-        if not User.objects.filter(id=nanny).exists():
-            raise serializers.ValidationError("Invalid user ID.")
-        return nanny
+        return validate_user_id(nanny)
 
 
 class ReviewValidationSerializer(serializers.Serializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     date = serializers.DateField(required=True)
 
-    def validate_user_id(self, user_id):
-        if not User.objects.filter(id=user_id).exists():
-            raise serializers.ValidationError("Invalid user ID.")
-        return user_id
+    def validate_user_id(self, value):
+        return validate_user_id(value)
 
-    def validate_date(self, date):
-        if date < timezone.now().date():
-            raise serializers.ValidationError("The date cannot be in the past.")
-        return date
+    def validate_date(self, value):
+        return validate_date(value)
