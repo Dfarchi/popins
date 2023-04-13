@@ -35,26 +35,26 @@ class General(APIView):
         return Response(usernames)
 
 
-
-#url == nannay_api/
+# url == nannay_api/
 
 class Nanny_api(APIView):
     def get_all_nannies(self) -> Response:
         all_nannys = [profile for profile in Profile.objects.all() if profile.is_nanny]
         return Response(all_nannys)
+
     def get_profile(self, user_id):
         nanny = get_spec_profile(user_id)
         if nanny.is_nanny:
             nanny_profile = {
-               'name': nanny.name,
+                'name': nanny.name,
                 'bio': nanny.bio,
-                'pic':nanny.profile_pic
+                'pic': nanny.profile_pic
             }
             return Response(nanny_profile)
         return Response(None, 404)
 
 
-#url == parent_api\
+# url == parent_api\
 
 class Parent_api(APIView):
 
@@ -73,7 +73,8 @@ class Parent_api(APIView):
             return Response(parent_profile)
         return Response(None, 404)
 
-#url == session_api\
+
+# url == session_api\
 
 class Session_api(APIView):
 
@@ -91,23 +92,43 @@ class Session_api(APIView):
     def get_session_by_id(self, session_id) -> Session:
         return get_object_or_404(Session, id=session_id)
 
-
     def get_session_interests(self, sessions_id) -> Response:
         """when a parent wants to see all the interests different nannies had for their session"""
         interests_list = []
         for interest in Interest.objects.all().filter(session__iexact=sessions_id):
             interests_list.append({
-                'name': interest.nanny,  #this should be a link to Nanny_api.get_profile(self, user_id)
+                'name': interest.nanny,  # this should be a link to Nanny_api.get_profile(self, user_id)
                 'note': interest.note,
                 'talked': interest.talked,
                 'status': interest.status
             })
         return Response(interests_list)
 
+    def update_session_has_happened(self,session_id):
+        se = self.get_session_by_id(session_id)
+        se.has_happened = True
+
+class Interest_api(APIView):
+
+    def get_sessions(self):
+        """for admin reasons"""
+        all_interest = Interest.objects.all()
+        return Response(all_interest)
+
+    def get_interest_by_id(self, interest_id) -> Interest:
+        return get_object_or_404(Interest, id=interest_id)
+
+    def update_had_talked(self, sessions_id):
+        """when talked checkbox had been checked"""
+        interest = self.get_interest_by_id(sessions_id)
+        interest.talked = True
+    def update_status(self, sessions_id):
+        """when session bean sealed checkbox had been checked"""
+        interest = self.get_interest_by_id(sessions_id)
+        interest.status = True
 
 
-
-#list of functions I will need at some point
+# list of functions I will need at some point
 def sign_Up():
     pass
 
@@ -145,10 +166,6 @@ def update_interest():
 
 
 def update_reviwe():
-    pass
-
-
-def get_all_interests():
     pass
 
 
