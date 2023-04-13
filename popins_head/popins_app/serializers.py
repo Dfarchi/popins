@@ -1,11 +1,13 @@
+from abc import ABC
 from django.utils import timezone
-from rest_framework import serializers
 from rest_framework.authtoken.admin import User
+from .models import *
+from rest_framework import serializers
 
-def validate_user_id(value):
-    if not User.objects.filter(id=value).exists():
+def validate_user_id(user_id):
+    if not User.objects.filter(id=user_id).exists():
         raise serializers.ValidationError("Invalid user ID.")
-    return value
+    return user_id
 
 def validate_date(value):
     if value < timezone.now().date():
@@ -18,12 +20,8 @@ def validate_salary(value):
     return value
 
 
-from .models import Session
-
-from rest_framework import serializers
-from .models import Profile
-
 class ProfileSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
 
     class Meta:
         model = Profile
@@ -31,17 +29,17 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 
-class SessionValidationSerializer(serializers.Serializer):
+class SessionValidationSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     date = serializers.DateField(required=True)
     salary = serializers.IntegerField(required=True)
     note = serializers.CharField(max_length=256, required=True)
     user_name = serializers.CharField(source='user.profile.name', read_only=True)
-    interested_nannys = serializers.SerializerMethodField()
+    interested_nannies = serializers.SerializerMethodField()
 
     class Meta:
         model = Session
-        fields = ('id', 'user_id', 'user_name', 'date', 'salary', 'has_happened', 'interested_nannys')
+        fields = ('id', 'user_id', 'user_name', 'date', 'salary', 'has_happened', 'interested_nannies')
 
     def validate_user_id(self, value):
         return validate_user_id(value)
@@ -52,11 +50,11 @@ class SessionValidationSerializer(serializers.Serializer):
     def validate_salary(self, value):
         return validate_salary(value)
 
-    def get_interested_nannys(self, session):
-        return [{'id': nanny.id, 'name': nanny.profile.name} for nanny in session.interested_nannys.all()]
+    # def get_interested_nannys(self, session):
+    #     return [{'id': nanny.id, 'name': nanny.profile.name} for nanny in session.interested_nannys.all()]
 
 
-class InterestValidationSerializer(serializers.Serializer):
+class InterestValidationSerializer(serializers.ModelSerializer):
     nanny = serializers.IntegerField(source='user.id', read_only=True)
     session = serializers.IntegerField(source='sessions.id', read_only=True)
     note = serializers.CharField(max_length=256, required=True)
@@ -75,12 +73,12 @@ class InterestValidationSerializer(serializers.Serializer):
         return validate_user_id(nanny)
 
 
-class ReviewValidationSerializer(serializers.Serializer):
+class ReviewValidationSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id', read_only=True)
     date = serializers.DateField(required=True)
 
-    def validate_user_id(self, value):
-        return validate_user_id(value)
-
-    def validate_date(self, value):
-        return validate_date(value)
+    # def validate_user_id(self, value):
+    #     return validate_user_id(value)
+    #
+    # def validate_date(self, value):
+    #     return validate_date(value)

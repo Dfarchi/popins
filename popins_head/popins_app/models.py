@@ -28,7 +28,7 @@ class Session(models.Model):
     salary = models.IntegerField(db_column='salary', default=50)
     note = models.TextField(max_length=256, db_column='note', null=False, blank=False)
     has_happened = models.BooleanField(null=False, default=False)
-    interested_nannys = models.ManyToManyField(User, through='Interest', related_name='sessions')
+    interested_nannies = models.ManyToManyField(User, through='Interest', related_name='sessions')
 
     def __str__(self):
         return f"{self.user.profile.name} on {self.date}"
