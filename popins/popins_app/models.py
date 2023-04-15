@@ -11,7 +11,7 @@ class Profile(models.Model):
     birth_year = models.IntegerField(db_column='birth_year', null=False)
     address = models.CharField(max_length=256, db_column='address', null=False, blank=False)
     link = models.URLField(max_length=200, blank=True)
-    profile_pic = models.ImageField(upload_to='images/')
+    # profile_pic = models.ImageField(upload_to='images/', null=True)
 
     # relations = models.ForeignKey('Relations', on_delete=models.RESTRICT, related_name='parent_relations')
     # phone_number = PhoneNumberField
