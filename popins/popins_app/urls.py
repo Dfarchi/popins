@@ -6,7 +6,8 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('users/', General.as_view(), name='users'),
+    path('users/', UserList.as_view(), name='user-list'),
+    path('users/<int:pk>/', UserDetail.as_view(), name='user-detail'),
     path('nannies/', NanniesList.as_view(), name='nannies'),
     path('nannies/<int:pk>/', Nannysingle.as_view(), name='nanny'),
     path('parents/', ParentsList.as_view(), name='parents'),

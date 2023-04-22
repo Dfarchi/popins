@@ -1,3 +1,4 @@
+
 """
 Django settings for popins project.
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'popins_app',
+
 ]
 
 MIDDLEWARE = [
