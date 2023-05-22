@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from django.contrib.auth.models import User
@@ -11,20 +12,27 @@ from .models import *
 from .serializers import *
 
 
-#######EXAMPLE############
+# #######EXAMPLE############
+#
+# def get_spec_user(user_id) -> User:
+#     return get_object_or_404(User, id=user_id)
+#
+#
+# def get_spec_profile(user_id) -> Profile:
+#     return get_object_or_404(Profile, id=user_id)
 
-def get_spec_user(user_id) -> User:
-    return get_object_or_404(User, id=user_id)
+class UserViewSet(ModelViewSet):
+    # TODO: Implement JWT tokens
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-def get_spec_profile(user_id) -> Profile:
-    return get_object_or_404(Profile, id=user_id)
+    def list(self, request, format=None):
 
-class UserList(APIView):
-    """
-    List all users, or create a new user.
-    """
-    def get(self, request, format=None):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
@@ -223,6 +231,8 @@ class InterestsList(APIView):
         serializer = InterestSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            if request.profile.is_nanny == True:
+                pass
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class Interestsingle(APIView):
@@ -294,3 +304,6 @@ class Reviewsingle(APIView):
         review = self.get_object(pk)
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+

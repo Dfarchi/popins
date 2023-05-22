@@ -1,29 +1,32 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-
 from ..models import Profile
 
 
-class UserSerializer(serializers.ModelSerializer):
-    profile_pic = serializers.SerializerMethodField()
+class ProfileSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
 
-    def get_profile_pic(self, obj):
-        return obj.user_profile.profile_pic
+    def get_email(self, obj):
+        return obj.user.email
 
-    def get_liked_apartments(self, obj):
-        return obj.liked_apartments
+    class Meta:
+        model = Profile
+        fields = "__all__"
 
+
+class ProfileEmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            "username",
             "email",
-            "first_name",
-            "last_name",
-            "is_parent",
-            "profile_pic",
-            "bio",
-            "birth_year",
-            "address",
-            "link",
         ]
+
+
+    def update(self, instance, validated_data):
+        # Might work too, didn't try:
+        # instance.user.email = validated_data["email"]
+        # instance.user.save()
+        setattr(instance.user, "email", validated_data["email"])
+        instance.user.save()
+        instance.save()
+        return instance.user

@@ -1,21 +1,27 @@
-from . import views
-from .views import *
 from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from .views.Session_viewset import SessionViewSet
 
-
+from .views.Register_viewset import RegistrationView
+from .views.Profile_viewset import ProfileView, google_oauth
 
 urlpatterns = [
-    path('users/', UserList.as_view(), name='user-list'),
-    path('users/<int:pk>/', UserDetail.as_view(), name='user-detail'),
-    path('nannies/', NanniesList.as_view(), name='nannies'),
-    path('nannies/<int:pk>/', Nannysingle.as_view(), name='nanny'),
-    path('parents/', ParentsList.as_view(), name='parents'),
-    path('parents/<int:pk>/', Parentsingle.as_view(), name='parent'),
-    path('sessions/', SessionsList.as_view(), name='sessions'),
-    path('sessions/<int:pk>/', Sessionsingle.as_view(), name='session'),
-    path('interests/', InterestsList.as_view(), name='interests'),
-    path('interests/<int:pk>/', Interestsingle.as_view(), name='interest'),
-    path('reviews/', ReviewsList.as_view(), name='reviews'),
-    path('reviews/<int:pk>/', Reviewsingle.as_view(), name='review'),
+    path("auth/google-oauth/", google_oauth, name="google-oauth"),
+    path(
+        "profile/",
+        ProfileView.as_view({"get": "retrieve", "patch": "partial_update"}),
+        name="profile",
+    ),
+    path(
+        "session/",
+        SessionViewSet.as_view(
+            {"get": "list", "patch": "partial_update", "post": "create"}
+        ),
+        name="session",
+    ),
+    # path("login/", google_oauth, name="login"),  # New path for user login
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("register/", RegistrationView.as_view(), name="Registration"),
 ]
