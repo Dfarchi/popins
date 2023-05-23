@@ -4,10 +4,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views.Session_viewset import SessionViewSet
 
 from .views.Register_viewset import RegistrationView
-from .views.Profile_viewset import ProfileView, google_oauth
+
+from .views.Profile_viewset import ProfileView
 
 urlpatterns = [
-    path("auth/google-oauth/", google_oauth, name="google-oauth"),
+    # path("auth/google-oauth/", google_oauth, name="google-oauth"),
     path(
         "profile/",
         ProfileView.as_view({"get": "retrieve", "patch": "partial_update"}),
