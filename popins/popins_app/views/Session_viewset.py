@@ -11,6 +11,7 @@ class SessionViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = SessionSerializer
@@ -27,17 +28,6 @@ class SessionViewSet(
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # Might be unnecessary
-    # def get_queryset(self, *args, **kwargs):
-    #     user_id = kwargs.get("pk")
-    #     return Session.objects.get(user_id=user_id)
-
     def retrieve(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             serializer = self.get_serializer(request.user)
@@ -45,17 +35,17 @@ class SessionViewSet(
         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user.is_authenticated:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)

@@ -31,6 +31,4 @@ class Interest_view(
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        # TODO: make sure I understand what that means
-        #  for my data in my DB and etc
         return super().destroy(request, *args, **kwargs)

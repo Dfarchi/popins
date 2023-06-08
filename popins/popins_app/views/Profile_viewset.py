@@ -20,6 +20,7 @@ class ProfileView(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     mixins.CreateModelMixin,
+    mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
     permission_classes = [permissions.AllowAny, permissions.IsAuthenticated]
@@ -28,8 +29,8 @@ class ProfileView(
     queryset = Profile.objects.all()
 
     def get_serializer(self, *args, **kwargs):
-        if self.request.method == "PATCH":
-            return ProfileEmailSerializer(args[0], **kwargs)
+        # if self.request.method == "PATCH":
+        #     return ProfileEmailSerializer(args[0], **kwargs)
         return ProfileSerializer(args[0], **kwargs)
         # return super().get_serializer(*args, **kwargs)
 
@@ -37,7 +38,7 @@ class ProfileView(
         user_id = kwargs.get("pk") if "pk" in kwargs else self.request.user.id
         return Profile.objects.get(user_id=user_id)
 
-    def retrieve(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             instance = self.get_queryset(*args, **kwargs)
             serializer = self.get_serializer(instance)
@@ -58,3 +59,6 @@ class ProfileView(
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+
+    # def list(self, request, *args, **kwargs):
+    #     return super().list(request, *args, **kwargs)

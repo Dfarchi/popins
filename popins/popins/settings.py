@@ -38,20 +38,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "popins_app",
+    "popins_app.apps.ApiConfig",
     "corsheaders",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = "popins.urls"
@@ -107,10 +107,25 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
-CORS_ALLOWED_ORIGINS = [
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+# ]
+# CORS_ALLOW_METHODS = (
+#     "DELETE",
+#     "GET",
+#     "OPTIONS",
+#     "PATCH",
+#     "POST",
+#     "PUT",
+# )
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/

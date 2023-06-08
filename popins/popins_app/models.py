@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone as tz
 
 
 class Profile(models.Model):
@@ -36,7 +37,7 @@ class Profile(models.Model):
 
 class Session(models.Model):
     user = models.ForeignKey(User, on_delete=models.RESTRICT, default=None)
-    date = models.DateField(db_column="date", null=False, auto_now_add=True)
+    date = models.DateField(db_column="date", null=False, default=tz.now)
     salary = models.IntegerField(db_column="salary", default=50)
     note = models.TextField(max_length=256, db_column="note", null=False, blank=False)
     has_happened = models.BooleanField(null=False, default=False)
