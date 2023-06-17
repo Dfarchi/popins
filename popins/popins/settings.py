@@ -118,14 +118,14 @@ CORS_ORIGIN_WHITELIST = [
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000",
 # ]
-# CORS_ALLOW_METHODS = (
-#     "DELETE",
-#     "GET",
-#     "OPTIONS",
-#     "PATCH",
-#     "POST",
-#     "PUT",
-# )
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
